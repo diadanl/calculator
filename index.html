@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #calculator {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 300px;
+            margin: auto;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            border: none;
+            outline: none;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table td {
+            width: 25%;
+            height: 60px;
+            font-size: 18px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+        }
+        table td:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<div id="calculator">
+    <input type="text" id="display" readonly>
+    <table>
+        <tr>
+            <td onclick="clearDisplay()">C</td>
+            <td onclick="backspace()">&#9003;</td>
+            <td onclick="appendSymbol('/')">/</td>
+            <td onclick="appendSymbol('*')">*</td>
+        </tr>
+        <tr>
+            <td onclick="appendNumber('7')">7</td>
+            <td onclick="appendNumber('8')">8</td>
+            <td onclick="appendNumber('9')">9</td>
+            <td onclick="appendSymbol('-')">-</td>
+        </tr>
+        <tr>
+            <td onclick="appendNumber('4')">4</td>
+            <td onclick="appendNumber('5')">5</td>
+            <td onclick="appendNumber('6')">6</td>
+            <td onclick="appendSymbol('+')">+</td>
+        </tr>
+        <tr>
+            <td onclick="appendNumber('1')">1</td>
+            <td onclick="appendNumber('2')">2</td>
+            <td onclick="appendNumber('3')">3</td>
+            <td rowspan="2" onclick="calculate()">=</td>
+        </tr>
+        <tr>
+            <td colspan="2" onclick="appendNumber('0')">0</td>
+            <td onclick="appendDecimalPoint()">.</td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    let currentInput = '';
+
+    function appendNumber(number) {
+        currentInput += number;
+        updateDisplay();
+    }
+
+    function appendSymbol(symbol) {
+        currentInput += ' ' + symbol + ' ';
+        updateDisplay();
+    }
+
+    function appendDecimalPoint() {
+        if (!currentInput.includes('.')) {
+            currentInput += '.';
+            updateDisplay();
+        }
+    }
+
+    function clearDisplay() {
+        currentInput = '';
+        updateDisplay();
+    }
+
+    function backspace() {
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
+    }
+
+    function calculate() {
+        try {
+            const result = evaluateExpression(currentInput);
+            currentInput = result.toString();
+            updateDisplay();
+        } catch (error) {
+            currentInput = 'Error';
+            updateDisplay();
+        }
+    }
+
+    function evaluateExpression(expression) {
+        const sanitizedExpression = expression.replace(/[^-()\d/*+.]/g, ''); // Sanitize expression
+        return Function('"use strict";return (' + sanitizedExpression + ')')(); // Use Function constructor to evaluate expression
+    }
+
+    function updateDisplay() {
+        document.getElementById('display').value = currentInput;
+    }
+</script>
+
+</body>
+</html>
